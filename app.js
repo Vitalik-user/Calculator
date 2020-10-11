@@ -83,7 +83,6 @@ function inputNum(nums) {
         inputs.value = txt
         document.getElementById('num').value = txt
     }
-
 }
 
 function searchPressingFuncButton() {
