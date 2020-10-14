@@ -1,5 +1,6 @@
-var c = 0,sum = 0, flag = 0, fl= false
-function numsButton() {
+var oneOperand = 0, flOperators = 0, flComma= false,flSpan = false,count = 0,previousTarget = '', i = 0
+
+function searchPressingNumButton() {
     let num = document.querySelectorAll('.num');
     for (let i = 0; i < num.length; i++) {
         let nums = num[i].innerText
@@ -21,69 +22,45 @@ function CreateOperand(nums) {
         }
         txt = txt + nums
         for (let number of arr) {
-            if (txt.length == number && fl == false) {
+            if (txt.length == number && flComma == false) {
                 txt = txt + ' '
             }
         }
-        // txt = "12345"
-        // txt = txt[1]+' '
-        //
-        // console.log(txt)
-        // console.log(txt[0] + ' '.split(''))
-        // console.log(txt)
-        // if (txt.length == 8){
-        //     console.log(txt.length)
-        //     let txt1 = txt.split('')
-        //     let txt2 = txt1.splice(1, 0, ' ')
-        //     txt = txt1.join('')
-        //     console.log(txt)
-        // }
-        // else if(txt.length > 5 && txt.length < 21) {
-        //     let txt1 = txt.split('')
-        //     let txt2 = txt1[i]
-        //     txt1[i] = txt1[j]
-        //     txt1[j] = txt2
-        //     txt = txt1.join('')
-        //     i++
-        //     j++
-        //
-        //     if(txt.length == 7){
-        //         k++
-        //     }
-        //
-        // } else if(txt.length > 8 && txt.length < 21) {
-        //     let txt1 = txt.split('')
-        //     //console.log(txt1,'gg')
-        //     let txt2 = txt1[l]
-        //     txt1[l] = txt1[m]
-        //     txt1[m] = txt2
-        //     txt = txt1.join('')
-        // }
-        if (nums == ',') {
-            if (fl == false) {
-                if (inputs.value == '' || inputs.value == 0) {
-                    inputs.value = 0 + ','
-                    document.getElementById('num').value = 0 + ','
-                }else {
-                    inputs.value = txt
-                    document.getElementById('num').value = txt
-                }
-                fl = true
+        if (nums == '.') {
+            if(inputs.value == '' || inputs.value == 0) {
+                inputs.value = 0 + '.'
+                document.getElementById('num').value = 0 + '.'
+                flComma = true
+            }else if (flComma == false) {
+                inputs.value = txt
+                document.getElementById('num').value = txt
+                flComma = true
             }
         } else {
-            inputs.value = txt
-            document.getElementById('num').value = txt
+                inputs.value = txt
+                document.getElementById('num').value = txt
         }
     }
 }
-function CreatePrompt(target, operand){
+function CreateSpan(target, operand){
+    let inputs = document.getElementById('input')
     let prompt = document.querySelector('.span')
     if(target == document.querySelector('#equally').innerText){
         prompt.innerText = ''
-    }
-    if(target == document.querySelector('#interest').innerText ){
-        console.log('ff')
+    }else if(target == document.querySelector('#interest').innerText ){
         prompt.innerText += ' ' + operand
+    }else if(inputs.value == ''){
+        prompt.innerText += ' ' + 0 + ' ' + target
+    }else if(target == 'x²'){
+        prompt.innerText += ` sqr(${operand})`
+    }else if(target == '√'){
+        prompt.innerText += ` √(${operand})`
+    }else if(target == '1/x'){
+        prompt.innerText += ` 1/(${operand})`
+    }else if(target == '%'){
+        prompt.innerText += ' ' + target
+    }else if(flSpan){
+        prompt.innerText += ' ' + target
     }else{
         prompt.innerText += ' ' + operand + ' ' + target
     }
@@ -92,11 +69,11 @@ function CreatePrompt(target, operand){
 
 function getOperand(){
     let inputs = document.getElementById('input')
-    let c = inputs.value
+    let timeOperand = inputs.value
     document.getElementById('num').value = ''
-   // inputs.value = ''
-    fl = false
-    return c
+    //inputs.value = ''
+    flComma = false
+    return timeOperand
 }
 
 
@@ -108,135 +85,225 @@ function searchPressingFuncButton() {
         func[i].onclick = allFunctionsButtons
     }
 }
+
 function allFunctionsButtons(e){
+    flComma = false
     let inputs = document.getElementById('input')
+    let Target = e.currentTarget.innerText
+    if(Target != '=' && Target != 'CE' && Target != 'C' && Target != 'DEL' &&
+        Target != '±'&& Target != 'x²' && Target != '%'&& Target != '√'&& Target != '1/x'){
+         previousTarget += e.currentTarget.innerText
+    }else if(Target == 'C' ){
+        previousTarget = ''
+        count = 0
+        oneOperand = 0
+        i = 0
+        flComma = false
+    }else if(Target == 'x²' || Target == '%'|| Target == '√'|| Target == '1/x'){
+        flSpan = true
+    }else if(Target == '='){
+        previousTarget = ''
+        count = 0
+        i = 0
+    }
     switch (e.currentTarget.innerText){
-        case '+': flag = 1
-            c = getOperand()
-            CreatePrompt(e.currentTarget.innerText,c)
+        case '+': flOperators = 1
+            if(count == 0){
+                oneOperand = getOperand()
+                if(!flSpan) {
+                    CreateSpan(e.currentTarget.innerText, oneOperand)
+                }else{
+                    CreateSpan(e.currentTarget.innerText, oneOperand)
+                }
+                flSpan = false
+            } else {
+                let twoOperand = getOperand()
+                if(!flSpan) {
+                    CreateSpan(e.currentTarget.innerText, twoOperand)
+                }else{
+                    CreateSpan(e.currentTarget.innerText, twoOperand)
+                }
+                operators(twoOperand)
+            }
+            count++
             break
-        case '−': flag = 2
-            c = getOperand()
-            CreatePrompt(e.currentTarget.innerText,c)
+        case '−': flOperators = 2
+            if(count == 0){
+                oneOperand = getOperand()
+                if(!flSpan) {
+                    CreateSpan(e.currentTarget.innerText, oneOperand)
+                }else{
+                    CreateSpan(e.currentTarget.innerText, oneOperand)
+                }
+                flSpan = false
+            } else{
+                let twoOperand = getOperand()
+                if(!flSpan) {
+                    CreateSpan(e.currentTarget.innerText, twoOperand)
+                }else{
+                    CreateSpan(e.currentTarget.innerText, twoOperand)
+                }
+                operators(twoOperand)
+            }
+            count++
             break
-        case '÷': flag = 3
-            c = getOperand()
-            CreatePrompt(e.currentTarget.innerText,c)
+        case '÷': flOperators = 3
+            if(count == 0){
+                oneOperand = getOperand()
+                if(!flSpan) {
+                    CreateSpan(e.currentTarget.innerText, oneOperand)
+                }else{
+                    CreateSpan(e.currentTarget.innerText, oneOperand)
+                }
+                flSpan = false
+            } else{
+                let twoOperand = getOperand()
+                if(!flSpan) {
+                    CreateSpan(e.currentTarget.innerText, twoOperand)
+                }else{
+                    CreateSpan(e.currentTarget.innerText, twoOperand)
+                }
+                operators(twoOperand)
+            }
+            count++
             break
-        case'⨯': flag = 4
-            c = getOperand()
-            CreatePrompt(e.currentTarget.innerText,c)
+        case'⨯': flOperators = 4
+            if(count == 0){
+                oneOperand = getOperand()
+                if(!flSpan) {
+                    CreateSpan(e.currentTarget.innerText, oneOperand)
+                }else{
+                    CreateSpan(e.currentTarget.innerText, oneOperand)
+                }
+                flSpan = false
+            } else{
+                let twoOperand = getOperand()
+                if(!flSpan) {
+                    CreateSpan(e.currentTarget.innerText, twoOperand)
+                }else{
+                    CreateSpan(e.currentTarget.innerText, twoOperand)
+                }
+                operators(twoOperand)
+            }
+            count++
             break
         case'C': removeInput()
-            fl = false
             break
         case'CE': inputs.value = 0
-            fl = false
+            let prompt = document.querySelector('.span')
+            let str = prompt.innerText.split(previousTarget[i])
+            let str2 = str.pop()
+            prompt.innerText = str.join(previousTarget[i]) + ' ' + previousTarget[i]
+            if( prompt.innerText == 'undefined'){
+                prompt.innerText = ''
+            }
+            flSpan = false
+            flComma = false
             document.getElementById('num').value = ''
             break
         case'DEL': delChar()
-            fl = false
+            flComma = false
             break
         case'±': signOperand()
             break
-        case'%': percent()
-            c = getOperand()
-            CreatePrompt(e.currentTarget.innerText,c)
+        case'%': let twoOperand = getOperand()
+            percent(twoOperand)
+            let rez = percent(twoOperand)
+            CreateSpan(e.currentTarget.innerText,rez)
             break
-        case'√': root()
-            CreatePrompt(e.currentTarget.innerText,c)
+        case'√': let operandRoot = inputs.value
+            root()
+            CreateSpan(e.currentTarget.innerText,operandRoot)
             break
-        case'x²': exponent()
-            CreatePrompt(e.currentTarget.innerText,c)
+        case'x²':
+            let operandExp = inputs.value
+            exponent()
+            CreateSpan(e.currentTarget.innerText,operandExp)
             break
-        case'1/x': fraction()
-            CreatePrompt(e.currentTarget.innerText,c)
+        case'1/x': let operandFrac = inputs.value
+            fraction()
+            CreateSpan(e.currentTarget.innerText,operandFrac)
             break
-       default: operators()
-           CreatePrompt(e.currentTarget.innerText,c)
+       default: operators(Target)
+           CreateSpan(e.currentTarget.innerText,oneOperand)
     }
 }
 
-function operators() {
+function operators(operand) {
     let inputs = document.getElementById('input')
-    if (flag == 1) {
-        let d = getOperand()
-        addNumbers(c,d)
-        flag = 0
-    } else if (flag == 2) {
-        let d = getOperand()
-        subNumbers(c,d)
-        flag = 0
-    } else if (flag == 3) {
-        let d = getOperand()
-        delNumbers(c,d)
-        flag = 0
-    } else if (flag == 4) {
-        let d = getOperand()
-        mulNumbers(c,d)
-        flag = 0
-    }
+    if(document.querySelector('#equally').innerText == operand) {
+        if (flOperators == 1) {
+            let twoOperand = getOperand()
+            addNumbers(oneOperand, twoOperand)
+            flOperators = 0
+        } else if (flOperators == 2) {
+            let twoOperand = getOperand()
+            subNumbers(oneOperand, twoOperand)
+            flOperators = 0
+        } else if (flOperators == 3) {
+            let twoOperand = getOperand()
+            delNumbers(oneOperand, twoOperand)
+            flOperators = 0
+        } else if (flOperators == 4) {
+            let twoOperand = getOperand()
+            mulNumbers(oneOperand, twoOperand)
+            flOperators = 0
+        }
 
+    }else{
+        flSpan = false
+        if (previousTarget[i] == '+') {
+            oneOperand = addNumbers(oneOperand, operand)
+            i++
+        } else if (previousTarget[i] == '−') {
+            oneOperand = subNumbers(oneOperand, operand)
+            i++
+        } else if (previousTarget[i] == '⨯') {
+            oneOperand = mulNumbers(oneOperand, operand)
+            i++
+        } else if (previousTarget[i] == '÷') {
+            oneOperand = delNumbers(oneOperand, operand)
+            i++
+        }
+    }
 }
 
 function fraction(){
     let inputs = document.getElementById('input')
-    let a = getOperand()
-    let per = 1 / a
-    inputs.value = per
+    let operand = getOperand()
+    let rez = 1 / operand
+    inputs.value = rez
     document.getElementById('num').value = ''
 }
 
 function root(){
     let inputs = document.getElementById('input')
-    let a = getOperand()
-    let per = Math.sqrt(a)
-    inputs.value = per
+    let operand = getOperand()
+    let rez = Math.sqrt(operand)
+    inputs.value = rez
     document.getElementById('num').value = ''
 }
 
 function exponent(){
     let inputs = document.getElementById('input')
-    let a = getOperand()
-    let per = +a * +a
-    // if(Number.isInteger(per) == false){
-    //     if(count == 0){
-    //         inputs.value = per.toFixed(2)
-    //     }
-    //     if(count == 1){
-    //         inputs.value = per.toFixed(4)
-    //     }
-    //     if(count == 2){
-    //         inputs.value = per.toFixed(8)
-    //     }
-    //     if(count == 3){
-    //         inputs.value = per.toFixed(16)
-    //
-    //     }
-    //     if(count == 4){
-    //         inputs.value = 'Переполнение'
-    //     }
-
-
-    // }
-    // else {
-    //     inputs.value = per
-    // }
-    inputs.value = per
+    let operand = getOperand()
+    let exp = +operand * +operand
+    inputs.value = exp
     document.getElementById('num').value = ''
 }
 
-function percent(){
+function percent(twoOperand){
     let inputs = document.getElementById('input')
-    let a = getOperand()
-    let per = +a / 100
+    let operand = getOperand()
+    let per = (+oneOperand * +twoOperand)/ 100
     inputs.value = per
     document.getElementById('num').value = ''
+    return per
 }
 
 function signOperand(){
     let inputs = document.getElementById('input')
-    inputs.value = inputs.value
+    inputs.value = -inputs.value
 }
 
 function delChar(){
@@ -254,40 +321,44 @@ function delChar(){
 
  function removeInput(){
      let inputs = document.getElementById('input')
-     let prompt = document.querySelector('.span')
+     let span = document.querySelector('.span')
      inputs.value = ""
      document.getElementById('num').value = ''
-     prompt.innerText = ''
+     span.innerText = ''
 }
 
-function mulNumbers(a,b){
+function mulNumbers(oneOperand,twoOperand){
     let inputs = document.getElementById('input')
-    let mul = +a * +b
+    let mul = +oneOperand * +twoOperand
     inputs.value = mul
     document.getElementById('num').value = ''
+    return mul
 }
 
-function delNumbers(a,b){
+function delNumbers(oneOperand,twoOperand){
     let inputs = document.getElementById('input')
-    let del = +a / +b
+    let del = +oneOperand / +twoOperand
     inputs.value = del
     document.getElementById('num').value = ''
+    return del
 }
 
-function subNumbers(a, b){
+function subNumbers(oneOperand, twoOperand){
     let inputs = document.getElementById('input')
-    let sub = +a - +b
+    let sub = +oneOperand - +twoOperand
     inputs.value = sub
     document.getElementById('num').value = ''
+    return sub
 }
 
 
-function addNumbers(a, b){
+function addNumbers(oneOperand, twoOperand){
     let inputs = document.getElementById('input')
-        let sum = +a + +b
-        inputs.value = sum
-        document.getElementById('num').value = ''
+    let sum = +oneOperand + +twoOperand
+    inputs.value = sum
+    document.getElementById('num').value = ''
+    return sum
 }
 
-numsButton()
+searchPressingNumButton()
 searchPressingFuncButton()

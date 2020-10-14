@@ -10,19 +10,22 @@ body{
 .calculator{
     max-width: 320px;
     margin: 0 auto;
-    height: 390px;
+    height: 410px;
     border: 1px solid blue;
     background-color: var(--main-color);
     position: relative;
 
 }
 .span{
+    height: 20px;
+    width: 300;
     position: absolute;
     right: 18px;
     top: 5px;
     color: rgb(122,122,122);
     font-size: 0.95rem;
     text-align: right;
+    overflow: auto;
 }
 
 input{
