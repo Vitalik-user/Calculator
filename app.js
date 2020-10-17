@@ -99,6 +99,7 @@ function allFunctionsButtons(e){
         oneOperand = 0
         i = 0
         flComma = false
+        inputs.setAttribute("style", "font-size: 2.8rem")
     }else if(Target == 'x²' || Target == '%'|| Target == '√'|| Target == '1/x'){
         flSpan = true
     }else if(Target == '='){
@@ -115,7 +116,7 @@ function allFunctionsButtons(e){
                 }else{
                     CreateSpan(e.currentTarget.innerText, oneOperand)
                 }
-                flSpan = false
+                 flSpan = false
             } else {
                 let twoOperand = getOperand()
                 if(!flSpan) {
